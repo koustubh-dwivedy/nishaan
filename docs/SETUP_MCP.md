@@ -13,11 +13,15 @@ Blender GUI and can't be automated:
 
 ## 2. Start the addon's server
 1. In the 3D viewport, press **N** to open the sidebar.
-2. Open the **"BlenderMCP"** tab.
-3. Click **"Connect to Claude"**.
+2. On the right edge, open the **"BlenderMCP"** tab (scroll the vertical tab strip if needed).
+3. At the bottom of the panel, click **"Connect to MCP server"**.
+   - NOTE: older docs call this "Connect to Claude" — in the current addon the
+     button text is **"Connect to MCP server"**.
+4. It should change to **"Disconnect from MCP server"** + **"Running on port 9876"** = live.
+   (Leave Poly Haven / Hyper3D / Sketchfab / Hunyuan options off — not needed.)
 
 Leave this Blender instance running during any pipeline session — the MCP server
-talks to Blender over a local socket that this addon opens.
+talks to Blender over a local socket (default port 9876) that this addon opens.
 
 ## 3. Verify (next Claude Code session)
 Newly-registered MCP tools load at session start, so open a **fresh** session, then:
