@@ -22,9 +22,15 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 - Inkscape: `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
 - BlenderMCP: _pending — install addon + register MCP server in Claude Code, then run the cube smoke test over MCP._
 
-**Next**
-- `harness.mcp` feature: install BlenderMCP addon, register MCP server, pass the smoke test (`snapshot`/`report` produce a render + telemetry JSON).
-- Then `stage1.last.acquire`: download a Derby/Oxford last and condition it.
+**`harness.mcp` — in progress (blocked on a manual GUI step)**
+- ✅ MCP server registered: `claude mcp add blender -- uvx blender-mcp` (local config); `claude mcp list` shows `blender ✓ Connected`.
+- ✅ Addon fetched: `vendor/blendermcp_addon.py` (gitignored; MIT, ahujasid/blender-mcp).
+- ⏳ **Manual (you):** install + enable the addon in Blender, click "Connect to Claude". See `docs/SETUP_MCP.md`.
+- ⏳ **Next session:** new MCP tools load at session start → run the cube-over-MCP smoke test to pass the `harness.mcp` gate.
 
-**Open questions / notes**
-- Confirm Blender CLI path on this machine for `init.sh` (`/Applications/Blender.app/Contents/MacOS/Blender`).
+**Next after MCP**
+- `stage1.last.acquire`: download a Derby/Oxford last and import it; `stage1.last.condition`: scale/orient/clean.
+
+**Notes**
+- Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
+- Telemetry scripts verified on a primitive (cube): watertight, dims, 5 canonical renders.

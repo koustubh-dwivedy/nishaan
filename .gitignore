@@ -11,6 +11,9 @@ __pycache__/
 *.pyc
 .venv/
 
+# Third-party addon fetched locally (MIT, ahujasid/blender-mcp) — not re-published here
+vendor/
+
 # Heavy render outputs are regenerated each session by snapshot() — keep the
 # folder (.gitkeep) but don't version every PNG. Telemetry JSON IS versioned
 # (it is the harness's cross-session memory).
