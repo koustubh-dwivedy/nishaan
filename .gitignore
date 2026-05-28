@@ -1,0 +1,18 @@
+# OS
+.DS_Store
+
+# Blender backups / temp
+*.blend1
+*.blend2
+*.blend@
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Heavy render outputs are regenerated each session by snapshot() — keep the
+# folder (.gitkeep) but don't version every PNG. Telemetry JSON IS versioned
+# (it is the harness's cross-session memory).
+50_renders/*.png
+50_renders/*.jpg

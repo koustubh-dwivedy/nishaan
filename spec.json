@@ -1,0 +1,100 @@
+{
+  "project": "Nishaan Derby/Oxford dress-shoe pipeline",
+  "automation": "maximum",
+  "units": "millimeters",
+  "shoe": { "type": "derby_or_oxford", "lacing": "open_derby_default" },
+  "conventions": {
+    "orientation": "heel at origin, toe +Y, up +Z",
+    "scale": "1 blender unit == 1 mm"
+  },
+  "tolerances": {
+    "scale_error_mm": 3,
+    "panel_max_stretch_pct": 4.0,
+    "dxf_roundtrip_error_mm": 0.5
+  },
+  "rules": [
+    "A feature flips to done:true ONLY when its gate passes under report().",
+    "Never delete or weaken a feature's gate or verify step.",
+    "Work one feature per session; leave the repo merge-ready.",
+    "Every geometry mutation is followed by snapshot() + report() before evaluating."
+  ],
+  "features": [
+    {
+      "id": "harness.repo",
+      "desc": "Public GitHub repo with baseline commit, inspirations/ committed as-is.",
+      "gate": "git remote reachable AND baseline commit pushed",
+      "verify": "gh repo view; git log --oneline",
+      "done": false
+    },
+    {
+      "id": "harness.env",
+      "desc": "Blender + Inkscape installed; init.sh launches Blender and prints scene state.",
+      "gate": "blender --version succeeds AND ./init.sh exits 0",
+      "verify": "run ./init.sh",
+      "done": true
+    },
+    {
+      "id": "harness.mcp",
+      "desc": "BlenderMCP addon installed + MCP server registered in Claude Code.",
+      "gate": "Claude can run a bpy script over MCP that creates and exports a cube",
+      "verify": "MCP smoke test: create cube, export, snapshot()",
+      "done": false
+    },
+    {
+      "id": "harness.telemetry",
+      "desc": "snapshot() renders canonical cameras; report() writes telemetry JSON.",
+      "gate": "snapshot produces N images AND report writes telemetry/*.json with dims+watertight",
+      "verify": "run both scripts on a primitive, agent views render + reads json",
+      "done": true
+    },
+    {
+      "id": "stage1.last.acquire",
+      "desc": "Download a Derby/Oxford last (or last-shaped mesh) and import to Blender.",
+      "gate": "mesh imported AND non-empty bounding box",
+      "verify": "report() bbox; snapshot() lateral view",
+      "done": false
+    },
+    {
+      "id": "stage1.last.condition",
+      "desc": "Scale to mm, orient (heel origin/toe +Y/up +Z), fill holes, derive featherline.",
+      "gate": "scale_error_mm within tolerance AND watertight AND orientation correct",
+      "verify": "report() dims vs last spec; snapshot() all cameras",
+      "done": false
+    },
+    {
+      "id": "stage2.upper.build",
+      "desc": "Shrinkwrap a clean quad upper skin; define topline/throat/featherline.",
+      "gate": "upper conforms to last (no gaps) AND topline curve defined",
+      "verify": "snapshot() medial+lateral; report() vert/face counts",
+      "done": false
+    },
+    {
+      "id": "stage3.panels.split",
+      "desc": "Apply dress-shoe panels (toe cap, vamp, quarters, facing, heel counter, tongue) + Nishaan motif lines; separate each panel; add lasting allowance.",
+      "gate": "expected panel objects exist AND each has lasting allowance margin",
+      "verify": "report() panel inventory + areas; snapshot() top+3/4",
+      "done": false
+    },
+    {
+      "id": "stage4.flatten",
+      "desc": "Flatten each panel (Paper Model + UV minimize-stretch); auto-insert seams and re-split until within tolerance.",
+      "gate": "every panel max_stretch_pct < tolerance",
+      "verify": "report() per-panel stretch; snapshot() distortion heatmap",
+      "done": false
+    },
+    {
+      "id": "stage5.finalize",
+      "desc": "Inkscape CLI: seam allowances, notches, grain, labels, mirror L/R; export tiled PDF + DXF/SVG.",
+      "gate": "DXF roundtrip dims within tolerance AND all panels labelled+mirrored",
+      "verify": "re-import DXF, report() dims; visual check of tiled PDF",
+      "done": false
+    },
+    {
+      "id": "stage6.handoff",
+      "desc": "Assemble render + panel/material list + last specs + allowances into a maker package.",
+      "gate": "package contains DXF/SVG + tiled PDF + render + panel list",
+      "verify": "ls 40_exports; snapshot() final assembled render",
+      "done": false
+    }
+  ]
+}

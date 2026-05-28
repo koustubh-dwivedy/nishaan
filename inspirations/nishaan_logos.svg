@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="900" viewBox="0 0 800 900">
+  <rect width="800" height="900" fill="#FBF8F2"/>
+
+  <!-- ============ CONCEPT 1: THE SEAL ============ -->
+  <text x="60" y="60" font-family="Georgia, serif" font-size="20" font-weight="bold" fill="#3a3a3a">Concept 1 — The Seal</text>
+  <text x="60" y="84" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#777">Circular maker's hallmark. Signs each pair as one-of-one.</text>
+
+  <g transform="translate(400,200)">
+    <circle cx="0" cy="0" r="70" fill="none" stroke="#9A3B1B" stroke-width="3"/>
+    <circle cx="0" cy="0" r="58" fill="none" stroke="#9A3B1B" stroke-width="1"/>
+    <g stroke="#9A3B1B" stroke-width="1.3" stroke-linecap="round">
+      <line x1="0" y1="-58" x2="0" y2="58"/>
+      <line x1="-58" y1="0" x2="58" y2="0"/>
+      <line x1="-41" y1="-41" x2="41" y2="41"/>
+      <line x1="41" y1="-41" x2="-41" y2="41"/>
+      <line x1="-22.2" y1="-53.6" x2="22.2" y2="53.6"/>
+      <line x1="22.2" y1="-53.6" x2="-22.2" y2="53.6"/>
+      <line x1="-53.6" y1="-22.2" x2="53.6" y2="22.2"/>
+      <line x1="53.6" y1="-22.2" x2="-53.6" y2="22.2"/>
+    </g>
+    <circle cx="0" cy="0" r="25" fill="#C8511F"/>
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#9A3B1B" stroke-width="1"/>
+    <text x="0" y="9" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#FBEDE6">N</text>
+  </g>
+  <text x="400" y="320" text-anchor="middle" font-family="Georgia, serif" font-size="30" letter-spacing="8" fill="#9A3B1B">NISHAAN</text>
+
+  <line x1="60" y1="370" x2="740" y2="370" stroke="#ddd" stroke-width="1"/>
+
+  <!-- ============ CONCEPT 2: THE STROKE ============ -->
+  <text x="60" y="420" font-family="Georgia, serif" font-size="20" font-weight="bold" fill="#3a3a3a">Concept 2 — The Stroke</text>
+  <text x="60" y="444" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#777">One calligraphic mark, like a tilak. Minimal, confident.</text>
+
+  <g transform="translate(400,540)">
+    <path d="M-10 -50 C 18 -36, 22 0, 8 40 C 3 52, -8 56, -15 52 C -3 47, 10 26, 3 -8 C -1 -26, -10 -40, -10 -50 Z" fill="#2A2566"/>
+    <circle cx="16" cy="-60" r="7" fill="#2A2566"/>
+  </g>
+  <text x="400" y="640" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="300" letter-spacing="10" fill="#2A2566">nishaan</text>
+
+  <line x1="60" y1="690" x2="740" y2="690" stroke="#ddd" stroke-width="1"/>
+
+  <!-- ============ CONCEPT 3: THE BINDU ============ -->
+  <text x="60" y="740" font-family="Georgia, serif" font-size="20" font-weight="bold" fill="#3a3a3a">Concept 3 — The Bindu</text>
+  <text x="60" y="764" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#777">A single dot — the seed-point. Most ownable, never clashes.</text>
+
+  <g transform="translate(400,830)">
+    <text x="-10" y="12" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="400" letter-spacing="3" fill="#0E6B53">nishaan</text>
+    <circle cx="118" cy="2" r="10" fill="#C8511F"/>
+  </g>
+</svg>
