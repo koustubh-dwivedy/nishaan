@@ -24,7 +24,7 @@
       "desc": "Public GitHub repo with baseline commit, inspirations/ committed as-is.",
       "gate": "git remote reachable AND baseline commit pushed",
       "verify": "gh repo view; git log --oneline",
-      "done": false
+      "done": true
     },
     {
       "id": "harness.env",
