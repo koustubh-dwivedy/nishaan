@@ -22,15 +22,19 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 - Inkscape: `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
 - BlenderMCP: _pending — install addon + register MCP server in Claude Code, then run the cube smoke test over MCP._
 
-**`harness.mcp` — in progress (blocked on a manual GUI step)**
-- ✅ MCP server registered: `claude mcp add blender -- uvx blender-mcp` (local config); `claude mcp list` shows `blender ✓ Connected`.
-- ✅ Addon fetched: `vendor/blendermcp_addon.py` (gitignored; MIT, ahujasid/blender-mcp).
-- ⏳ **Manual (you):** install + enable the addon in Blender, click "Connect to Claude". See `docs/SETUP_MCP.md`.
-- ⏳ **Next session:** new MCP tools load at session start → run the cube-over-MCP smoke test to pass the `harness.mcp` gate.
+**`harness.mcp` ✅ done**
+- Discovery: the installed add-on is the **official Blender Lab MCP extension** (`lab_blender_org/mcp`), NOT the third-party `ahujasid/blender-mcp`. They speak different protocols on port 9876.
+- De-registered the wrong `uvx blender-mcp` server. We now drive the live Blender directly via `scripts/mcp_client.py` (official protocol: null-byte-delimited `{type:execute,code,strict_json}`).
+- Smoke test passed end-to-end: `ping` → live scene; created+exported `SMOKE_CUBE`; saved `master.blend`; headless `report.py` (20mm watertight) + `snapshot.py` (5 renders, viewed) confirmed.
+- `master.blend` reset to a **clean template** (0 objects, unit_system NONE → 1 unit == 1 mm).
 
-**Next after MCP**
-- `stage1.last.acquire`: download a Derby/Oxford last and import it; `stage1.last.condition`: scale/orient/clean.
+**Stage 0 COMPLETE.** All four harness features done; repo pushed.
+
+**Next: Stage 1**
+- `stage1.last.acquire`: download a Derby/Oxford last (Sketchfab/Cults3D — see plan), import into `master.blend` via `mcp_client.py`, `report`+`snapshot` to confirm.
+- `stage1.last.condition`: scale to mm, orient (heel origin/toe +Y/up +Z), fill holes, derive featherline.
 
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
-- Telemetry scripts verified on a primitive (cube): watertight, dims, 5 canonical renders.
+- Drive live Blender: `python3 scripts/mcp_client.py file <script>` (script sets `result`). Persist via `bpy.ops.wm.save_as_mainfile`; then headless `report`/`snapshot` on `master.blend`.
+- To resume after any restart: `./init.sh` (pings MCP + prints next feature), read this file + `git log` + `spec.json`.

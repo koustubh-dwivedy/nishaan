@@ -1,34 +1,38 @@
-# BlenderMCP setup (one-time, manual GUI steps)
+# Blender MCP setup
 
-The MCP server (`uvx blender-mcp`) is already registered with Claude Code
-(`claude mcp add blender -- uvx blender-mcp`). Two steps remain that require the
-Blender GUI and can't be automated:
+We use the **official Blender Lab MCP extension** (`lab_blender_org/mcp`, ships
+for Blender 5.1+), *not* the third-party `ahujasid/blender-mcp`. The harness drives
+the running Blender by talking to the extension's TCP socket directly via
+`scripts/mcp_client.py` — so it works regardless of whether any MCP tools are
+loaded in the current Claude session (keeps the pipeline resumable without restarts).
 
-## 1. Install + enable the addon
-1. Download the addon (already vendored locally at `vendor/blendermcp_addon.py`;
-   source: https://github.com/ahujasid/blender-mcp , MIT).
-2. Open **Blender → Edit → Preferences → Add-ons → Install…**
-3. Select `vendor/blendermcp_addon.py`.
-4. Tick the box next to **"Interface: Blender MCP"** to enable it.
+## One-time enable (GUI)
+1. Blender → **Edit → Preferences → Get Extensions / Add-ons** → enable **"MCP"**
+   (by Blender Lab). It's already installed at
+   `~/Library/Application Support/Blender/5.1/extensions/lab_blender_org/mcp`.
+2. In the 3D viewport press **N** → open the **"Blender MCP"** sidebar tab.
+3. Click **"Connect to MCP server"** → it shows **"Running on port 9876"**.
 
-## 2. Start the addon's server
-1. In the 3D viewport, press **N** to open the sidebar.
-2. On the right edge, open the **"BlenderMCP"** tab (scroll the vertical tab strip if needed).
-3. At the bottom of the panel, click **"Connect to MCP server"**.
-   - NOTE: older docs call this "Connect to Claude" — in the current addon the
-     button text is **"Connect to MCP server"**.
-4. It should change to **"Disconnect from MCP server"** + **"Running on port 9876"** = live.
-   (Leave Poly Haven / Hyper3D / Sketchfab / Hunyuan options off — not needed.)
+Leave Blender running during a session. It does **not** need to be the foreground
+app for the official extension (its server is non-blocking on the main thread).
 
-Leave this Blender instance running during any pipeline session — the MCP server
-talks to Blender over a local socket (default port 9876) that this addon opens.
+## Protocol (how mcp_client.py talks to it)
+- Request : `{"type":"execute","code":<python>,"strict_json":true}` + `\0`
+- Response: `{"status":"ok","result":{...},"stdout":...,"stderr":...}` + `\0`
+- The `code` must assign a JSON-serializable dict to a variable named `result`.
 
-## 3. Verify (next Claude Code session)
-Newly-registered MCP tools load at session start, so open a **fresh** session, then:
-- Ask Claude to create a cube and export it via the Blender MCP tools.
-- Run `snapshot.py` / `report.py` and confirm the render + telemetry JSON.
+```bash
+python3 scripts/mcp_client.py ping                     # liveness + scene objects
+python3 scripts/mcp_client.py code "result = {...}"     # inline
+python3 scripts/mcp_client.py file path/to_script.py    # script must set `result`
+```
 
-That passes the `harness.mcp` gate in `spec.json`.
+`./init.sh` pings this socket at session start and reports LIVE / not responding.
 
-> Source attribution: BlenderMCP by ahujasid (MIT). A richer alternative with
-> arbitrary `bpy` script execution + async jobs: github.com/djeada/blender-mcp-server.
+## Verified
+- `ping` returns the live scene; smoke test created+exported a cube and saved `master.blend`;
+  headless `report.py`/`snapshot.py` confirmed it (watertight, 20mm, rendered). `harness.mcp` ✅.
+
+> Note: we are NOT using `uvx blender-mcp` (that third-party server speaks a different
+> protocol on the same port and was de-registered). Native MCP-tool registration for the
+> official server can be revisited later per https://www.blender.org/lab/mcp-server/.

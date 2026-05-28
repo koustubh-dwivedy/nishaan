@@ -35,10 +35,10 @@
     },
     {
       "id": "harness.mcp",
-      "desc": "BlenderMCP addon installed + MCP server registered in Claude Code.",
-      "gate": "Claude can run a bpy script over MCP that creates and exports a cube",
-      "verify": "MCP smoke test: create cube, export, snapshot()",
-      "done": false
+      "desc": "Official Blender MCP extension (lab_blender_org/mcp) running; harness drives it via scripts/mcp_client.py over the live TCP socket (localhost:9876, null-byte JSON {type:execute,code,strict_json}).",
+      "gate": "mcp_client can run bpy that creates+exports a cube AND headless report/snapshot confirm it",
+      "verify": "python3 scripts/mcp_client.py ping; smoke: create cube, export glb, save master.blend, report+snapshot",
+      "done": true
     },
     {
       "id": "harness.telemetry",

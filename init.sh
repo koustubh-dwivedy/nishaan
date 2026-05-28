@@ -28,6 +28,15 @@ else
   echo "WARN: Inkscape not found (needed at Stage 5)."
 fi
 
+# --- live Blender MCP socket (official lab_blender_org/mcp extension) ---
+# Non-fatal: the headless pipeline works without it, but live-driving needs it.
+if python3 scripts/mcp_client.py ping >/dev/null 2>&1; then
+  echo "Blender MCP socket: LIVE (localhost:9876) — can drive the running Blender."
+else
+  echo "Blender MCP socket: not responding. Open Blender, enable the MCP add-on,"
+  echo "  click 'Connect to MCP server' (port 9876). See docs/SETUP_MCP.md."
+fi
+
 # --- master .blend (created once MCP is wired) ---
 MASTER="$ROOT/master.blend"
 if [ -f "$MASTER" ]; then

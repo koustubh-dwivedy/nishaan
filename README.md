@@ -10,8 +10,10 @@ last → 3D upper → styling/panel split → flatten to 2D → cut-ready DXF/SV
 
 ## How it works
 
-Claude drives **Blender** through the **Model Context Protocol (BlenderMCP)**, composing a library of
-`bpy` scripts. The agent never works blind — every geometry mutation is followed by an **OBSERVE** step:
+Claude drives **Blender** through the **official Blender Lab MCP extension** — talking to its live TCP
+socket via `scripts/mcp_client.py` (`{type:execute,code,strict_json}` null-byte protocol) — composing a
+library of `bpy` scripts. The agent never works blind — every geometry mutation is followed by an
+**OBSERVE** step:
 
 - **`scripts/snapshot.py`** — renders the scene from fixed canonical cameras the agent views to judge form.
 - **`scripts/report.py`** — emits numeric telemetry (dimensions, distortion, watertightness) to `telemetry/`.
