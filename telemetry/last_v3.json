@@ -1,0 +1,23 @@
+{
+  "tag": "last_v3",
+  "timestamp": "2026-05-29T04:08:31",
+  "blender_version": "5.1.2",
+  "unit_scale": 1.0,
+  "object_count": 1,
+  "objects": [
+    {
+      "name": "LAST",
+      "dims_mm": [
+        95.31,
+        280.17,
+        96.48
+      ],
+      "verts": 13558,
+      "faces": 13460,
+      "tris": 26920,
+      "surface_area_mm2": 13487.3,
+      "non_manifold_edges": 0,
+      "watertight": true
+    }
+  ]
+}

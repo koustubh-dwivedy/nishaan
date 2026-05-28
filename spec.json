@@ -53,7 +53,7 @@
       "gate": "LAST mesh exists, watertight, length within a few mm of target, heel at origin / toe +Y / up +Z",
       "verify": "report() dims+watertight; snapshot() lateral+3/4; visual: recognizable last (instep hump, toe taper, heel seat)",
       "done": true,
-      "note": "v2 image-derived last: watertight, 285x101x97mm, recognizable last profile (vs the discarded v1 ellipse guess in build_last.py). Refinement opportunities: rounder toe box (width tapers to a point), soften heel-seat lip, add medial/lateral asymmetry. Side featherline trace is unreliable on glossy dark shoes -> bottom is modelled, which is correct shoemaking practice."
+      "note": "v4 (scripts/reconstruct_last.py): image-derived + lofted LAST-SHAPED cross-sections (flat featherline bottom + domed asymmetric top), n-gon end caps (no pinching poles), Catmull-Clark subsurf. Smooth organic last: rounded heel, rounded toe box, convex instep, asymmetric plan, watertight. Tried + rejected: v1 ellipse loft (pointed toe), v2, v3 boolean plan/profile intersection (accurate silhouettes but slab-sided/blocky). Key fixes learned: prisms/from_pydata need recalc_face_normals BEFORE boolean (else voxel remesh makes a hollow shell); convex-smooth the traced top to remove the lace-throat dip; round heel/toe in the silhouette, not via mesh smoothing."
     },
     {
       "id": "stage1.last.condition",

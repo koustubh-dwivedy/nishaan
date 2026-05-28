@@ -39,28 +39,39 @@ Wd = (pts - mean) @ axis_wid                  # width coord
 lmin, lmax = L.min(), L.max()
 length_px = lmax - lmin
 
-# width at each length bin
+# per length bin, capture the REAL left & right edges (asymmetric outline)
 bins = np.linspace(lmin, lmax, M + 1)
-raw_t, raw_hw, centers = [], [], []
+raw_t, lo, hi = [], [], []
 for i in range(M):
     sel = (L >= bins[i]) & (L < bins[i + 1])
     if sel.sum() < 5:
         continue
     w = Wd[sel]
     raw_t.append(((bins[i] + bins[i + 1]) / 2 - lmin) / length_px)
-    raw_hw.append((w.max() - w.min()) / 2.0)
-    centers.append((w.max() + w.min()) / 2.0)
-raw_t = np.array(raw_t); raw_hw = np.array(raw_hw, float)
+    lo.append(float(w.min())); hi.append(float(w.max()))
+raw_t = np.array(raw_t); lo = np.array(lo); hi = np.array(hi)
+hw = (hi - lo) / 2.0
 
 # wider end = heel -> ensure t=0 is heel
-if raw_hw[:len(raw_hw)//3].mean() < raw_hw[-len(raw_hw)//3:].mean():
-    raw_t = 1.0 - raw_t[::-1]; raw_hw = raw_hw[::-1]; centers = centers[::-1]
+if hw[:len(hw)//3].mean() < hw[-len(hw)//3:].mean():
+    raw_t = 1.0 - raw_t[::-1]; lo = lo[::-1]; hi = hi[::-1]
 
-hw_s = np.polyval(np.polyfit(raw_t, raw_hw, 7), raw_t)   # smooth
-stations = [{"t": round(float(t), 4), "half_w": round(float(hw / length_px), 4)}
-            for t, hw in zip(raw_t, hw_s)]
+def med(y, w=11):
+    w = min(w, (len(y)//2)*2+1); p = w//2; yp = np.pad(y, p, mode="edge")
+    return np.array([np.median(yp[i:i+w]) for i in range(len(y))])
+def smooth(y, w=9):
+    w = min(w, (len(y)//2)*2+1); p = w//2; yp = np.pad(y, p, mode="edge")
+    return np.convolve(yp, np.ones(w)/w, mode="valid")
+lo_s = smooth(med(lo)); hi_s = smooth(med(hi))
+c0 = float((lo_s + hi_s).mean() / 2.0)   # global centerline of the outline
+
+stations = [{"t": round(float(t), 4),
+             "left":  round(float((l - c0) / length_px), 4),    # signed, rel. to centerline
+             "right": round(float((r - c0) / length_px), 4),
+             "half_w": round(float((r - l) / 2.0 / length_px), 4)}
+            for t, l, r in zip(raw_t, lo_s, hi_s)]
 report = {"source": img_path, "view": "top", "length_px": float(length_px),
-          "note": "half-width as fraction of length; heel t=0, toe t=1, smoothed",
+          "note": "left/right outline edges (signed, rel. to centerline) as fraction of length; heel t=0, toe t=1, smoothed",
           "stations": stations}
 with open(out_json, "w") as f:
     json.dump(report, f, indent=2)

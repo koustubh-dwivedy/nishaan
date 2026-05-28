@@ -52,13 +52,24 @@ def setup_engine():
     sc.render.resolution_y = 600
     sc.render.film_transparent = False
 
-def add_light(loc):
+def add_light(loc, target):
     l = bpy.data.lights.new("snap_sun", "SUN")
-    l.energy = 3.0
+    l.energy = 4.0
     o = bpy.data.objects.new("snap_sun", l)
     o.location = loc
+    o.rotation_euler = (target - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
     bpy.context.scene.collection.objects.link(o)
     return o
+
+def add_ambient(strength=0.4):
+    sc = bpy.context.scene
+    if sc.world is None:
+        sc.world = bpy.data.worlds.new("snap_world")
+    sc.world.use_nodes = True
+    bg = sc.world.node_tree.nodes.get("Background")
+    if bg:
+        bg.inputs[0].default_value = (1, 1, 1, 1)
+        bg.inputs[1].default_value = strength
 
 def render_from(name, loc, target, out_dir, tag):
     cam_data = bpy.data.cameras.new(f"snapcam_{name}")
@@ -82,7 +93,9 @@ def main():
     center = (mins + maxs) / 2.0
     size = max((maxs - mins).length, 1.0)
     d = size * 1.6
-    add_light(center + Vector((d, -d, d)))
+    add_light(center + Vector((d, -d, d)), center)
+    add_light(center + Vector((-d, -d, d * 0.5)), center)
+    add_ambient(0.45)
     setup_engine()
     # Convention: heel->toe along +Y, width along X, up +Z.
     cams = {

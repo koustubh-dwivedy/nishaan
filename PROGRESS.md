@@ -48,9 +48,15 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 - Reference photos (H&M, user-provided) are gitignored; only derived `data/profile_side.json` + `data/profile_top.json` committed. Attribution in `docs/REFERENCES.md`.
 - Refinement opportunities: rounder toe box, soften heel-seat lip, medial/lateral asymmetry.
 
+**Last v4 — smooth organic last (current).** User rejected the blocky/pointed earlier attempts. Rebuilt properly after researching Blender organic-modeling practice:
+- `scripts/reconstruct_last.py`: loft LAST-SHAPED cross-sections (flat featherline bottom + domed asymmetric top from the traced plan left/right edges + convex instep from the traced side top), n-gon end caps (NOT single-vertex poles → no pinching), Catmull-Clark subsurf 2.
+- Result: rounded heel, rounded toe box, convex instep, asymmetric plan, watertight. Verified lateral + ¾ + top renders — a legit last.
+- Hard-won lessons (in spec note + memory): recalc_face_normals on prisms BEFORE boolean or voxel-remesh yields a hollow shell (signed-volume≈0, renders dark); snapshot.py now uses world ambient + aimed suns so geometry is always visible; round heel/toe in the silhouette not via smoothing.
+- Retired scripts: build_last.py (v1 ellipse), reconstruct_last_v3.py (boolean, slab-sided).
+
 **Next**
-- Optional: refine last shape further (toe box / asymmetry) if desired.
-- `stage1.last.condition`: orientation/scale already correct by construction; remaining = explicitly mark the featherline curve for Stage 2/3.
+- Optional polish: fuller toe box, soften featherline edge, stronger medial/lateral asymmetry.
+- `stage1.last.condition`: orientation/scale correct by construction; remaining = mark the featherline curve for Stage 2/3.
 - `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat.
 
 **Notes**
