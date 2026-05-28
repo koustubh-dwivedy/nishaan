@@ -14,6 +14,10 @@ __pycache__/
 # Third-party addon fetched locally (MIT, ahujasid/blender-mcp) — not re-published here
 vendor/
 
+# Reference product images are copyrighted (H&M etc.) and CV debug overlays derived
+# from them — kept local, NOT republished. Only derived numeric outlines (data/) are committed.
+references/
+
 # Heavy render outputs are regenerated each session by snapshot() — keep the
 # folder (.gitkeep) but don't version every PNG. Telemetry JSON IS versioned
 # (it is the harness's cross-session memory).
