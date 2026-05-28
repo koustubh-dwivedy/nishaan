@@ -35,26 +35,20 @@ c = max(cnts, key=cv2.contourArea)
 mask = np.zeros_like(fg)
 cv2.drawContours(mask, [c], -1, 255, -1)
 
-# sole/heel = very dark pixels within the shoe -> keep the connected blob at the bottom
-dark = (((gray < 75).astype(np.uint8)) & (mask > 0)).astype(np.uint8) * 255
-dark = cv2.morphologyEx(dark, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8), iterations=2)
-ncomp, lbl, stats, _ = cv2.connectedComponentsWithStats(dark)
-# choose the component whose pixels sit lowest (largest mean y) and are sizeable
-best, best_score = 0, -1
-for ci in range(1, ncomp):
-    ys_c = np.where(lbl == ci)[0] if False else None
-    area = stats[ci, cv2.CC_STAT_AREA]
-    cy = stats[ci, cv2.CC_STAT_TOP] + stats[ci, cv2.CC_STAT_HEIGHT] / 2.0
-    score = area * (cy / H)               # big AND low in the frame
-    if score > best_score:
-        best_score, best = score, ci
-sole = ((lbl == best).astype(np.uint8)) * 255
+# sole/heel = the near-BLACK band at the bottom. Strict threshold so glossy
+# dark-brown upper (which is ~50-90 gray) is excluded and only the black sole/heel remains.
+DARK = 40
+darkmask = ((((gray < DARK).astype(np.uint8)) & (mask > 0)).astype(np.uint8)) * 255
+# horizontal opening removes thin VERTICAL dark streaks (throat shadows, stitching,
+# eyelets) while keeping the horizontally-continuous sole/heel band intact.
+sole = cv2.morphologyEx(darkmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (41, 1)))
+sole = cv2.morphologyEx(sole, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
 
 xs = np.where(mask.sum(axis=0) > 0)[0]
 x0, x1 = int(xs.min()), int(xs.max())
 length_px = x1 - x0
 
-# raw per-column samples (toe right, heel left -> t=0 heel, t=1 toe)
+# featherline = TOP edge of the sole band per column (NaN where no sole -> interpolate)
 ts, top_raw, fth_raw = [], [], []
 for i in range(N):
     t = i / (N - 1)
@@ -64,20 +58,32 @@ for i in range(N):
         continue
     top_y, bot_y = int(col.min()), int(col.max())
     scol = np.where(sole[:, x] > 0)[0]
-    feather_y = int(scol.min()) if len(scol) else bot_y   # TOP edge of sole blob
+    feather_y = float(scol.min()) if len(scol) else np.nan
     ts.append(t); top_raw.append(top_y); fth_raw.append(feather_y)
 
 ts = np.array(ts); top_raw = np.array(top_raw, float); fth_raw = np.array(fth_raw, float)
+# fill invalid featherline columns by interpolating from valid neighbours
+valid = ~np.isnan(fth_raw)
+if valid.sum() >= 2:
+    fth_raw = np.interp(ts, ts[valid], fth_raw[valid])
 base_y = float(mask.shape[0])  # use image bottom as a stable reference for normalization
 base_y = float(max(np.where(mask[:, x] > 0)[0].max() for x in
                    [min(max(int(round(x0 + t * length_px)), x0), x1) for t in ts]))
 
-# polynomial smoothing (degree 7): removes CV noise + the throat dip -> last-like curves
-def fit(y, deg=7):
-    p = np.polyfit(ts, y, deg)
-    return np.polyval(p, ts)
-top_s = fit(top_raw); fth_s = fit(fth_raw)
-fth_s = np.maximum(fth_s, top_s + 1)  # featherline must stay below the top profile
+# robust smoothing: median filter kills per-column outliers (arch gaps, dark
+# stitching/eyelets bridging up), then a moving average; keeps real features
+# (heel-seat rise, toe spring) without polynomial ringing.
+def median_filt(y, w=11):
+    w = min(w, (len(y) // 2) * 2 + 1); pad = w // 2
+    yp = np.pad(y, pad, mode="edge")
+    return np.array([np.median(yp[i:i + w]) for i in range(len(y))])
+def smooth(y, w=9):
+    w = min(w, (len(y) // 2) * 2 + 1); pad = w // 2
+    yp = np.pad(y, pad, mode="edge")
+    return np.convolve(yp, np.ones(w) / w, mode="valid")
+top_s = smooth(median_filt(top_raw, 7), 7)
+fth_s = smooth(median_filt(fth_raw, 13), 9)
+fth_s = np.maximum(fth_s, top_s + 2)  # featherline must stay below the top profile
 
 stations = []
 for t, ty, ts_, fy, fs_ in zip(ts, top_raw, top_s, fth_raw, fth_s):

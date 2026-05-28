@@ -41,9 +41,17 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 - Observed via `snapshot.py` (fixed cameras for +Y-length convention: lateral/medial/top/heel/toe/3·4/sole). Iterated the station table once (fuller heel, more toe-box volume).
 - v1 is geometrically correct but shape is approximate (toe tip tapers thin; mirror-symmetric, real last is medial/lateral asymmetric). Refine `STATIONS` in build_last.py for higher fidelity if desired.
 
+**`stage1.last.acquire` REDONE — image-reverse-engineered last (v2)**
+- v1 ellipse-guess last was poor (user feedback: "extremely shitty"). Replaced with an image-derived method per user's instruction (trace real Oxford photos, reverse-engineer the last).
+- Pipeline: `trace_side.py` (OpenCV via `uv`) extracts the top/instep silhouette + featherline from a lateral Derby photo (horizontal-opening to drop shadow corridors, median+mean smoothing); `trace_top.py` extracts the width profile (PCA length axis) from the plan photo; `reconstruct_last.py` lofts cross-sections = **traced top silhouette + traced width + modelled bottom** (featherline plane + heel-seat lift + toe spring; the side featherline trace is unreliable on a glossy dark shoe, and a finished shoe hides the true featherline, so modelling the bottom is correct shoemaking practice).
+- Result: watertight, 285×101×97mm, recognizable last (instep hump, toe taper, heel seat) — big improvement. Verified via lateral + ¾ renders.
+- Reference photos (H&M, user-provided) are gitignored; only derived `data/profile_side.json` + `data/profile_top.json` committed. Attribution in `docs/REFERENCES.md`.
+- Refinement opportunities: rounder toe box, soften heel-seat lip, medial/lateral asymmetry.
+
 **Next**
-- `stage1.last.condition`: largely satisfied by construction (scale/orient correct). Remaining: derive/mark the **featherline** (upper↔sole boundary) explicitly for Stage 2/3.
-- Then `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat.
+- Optional: refine last shape further (toe box / asymmetry) if desired.
+- `stage1.last.condition`: orientation/scale already correct by construction; remaining = explicitly mark the featherline curve for Stage 2/3.
+- `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat.
 
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
