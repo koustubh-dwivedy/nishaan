@@ -30,9 +30,20 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 
 **Stage 0 COMPLETE.** All four harness features done; repo pushed.
 
-**Next: Stage 1**
-- `stage1.last.acquire`: download a Derby/Oxford last (Sketchfab/Cults3D — see plan), import into `master.blend` via `mcp_client.py`, `report`+`snapshot` to confirm.
-- `stage1.last.condition`: scale to mm, orient (heel origin/toe +Y/up +Z), fill holes, derive featherline.
+---
+
+## 2026-05-29 — Stage 1: parametric last
+
+**`stage1.last.acquire` ✅ done**
+- Research finding: no free, no-login, directly-downloadable *dress* (Derby/Oxford) last exists. Best open last (OpenRun, CC BY-SA 4.0) is athletic + login-gated; only no-login direct downloads are foot scans. Chose **parametric** (FOSS, controllable, dress-appropriate).
+- `scripts/build_last.py` lofts elliptical stations (EU42 men's dress) → `LAST` mesh, subsurf-smoothed, saved to `master.blend`. Built via `mcp_client.py` in live Blender.
+- Telemetry: **watertight**, L285×W86×H99mm, oriented heel@origin / toe +Y / up +Z. Gate met.
+- Observed via `snapshot.py` (fixed cameras for +Y-length convention: lateral/medial/top/heel/toe/3·4/sole). Iterated the station table once (fuller heel, more toe-box volume).
+- v1 is geometrically correct but shape is approximate (toe tip tapers thin; mirror-symmetric, real last is medial/lateral asymmetric). Refine `STATIONS` in build_last.py for higher fidelity if desired.
+
+**Next**
+- `stage1.last.condition`: largely satisfied by construction (scale/orient correct). Remaining: derive/mark the **featherline** (upper↔sole boundary) explicitly for Stage 2/3.
+- Then `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat.
 
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.

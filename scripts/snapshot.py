@@ -84,12 +84,15 @@ def main():
     d = size * 1.6
     add_light(center + Vector((d, -d, d)))
     setup_engine()
+    # Convention: heel->toe along +Y, width along X, up +Z.
     cams = {
-        "lateral":      center + Vector((0, -d, 0)),
-        "medial":       center + Vector((0,  d, 0)),
-        "top":          center + Vector((0,  0, d)),
-        "three_quarter":center + Vector((d, -d, d * 0.6)),
-        "sole":         center + Vector((0,  0, -d)),
+        "lateral":      center + Vector(( d, 0, 0)),        # look -X: side profile (the key view)
+        "medial":       center + Vector((-d, 0, 0)),        # look +X: inner side
+        "top":          center + Vector(( 0, 0, d)),        # plan view
+        "heel":         center + Vector(( 0, -d, d * 0.2)), # behind heel, look +Y
+        "toe":          center + Vector(( 0,  d, d * 0.2)), # beyond toe, look -Y
+        "three_quarter":center + Vector(( d, -d, d * 0.6)),
+        "sole":         center + Vector(( 0, 0, -d)),       # bottom / featherline
     }
     written = []
     for name, loc in cams.items():

@@ -49,10 +49,11 @@
     },
     {
       "id": "stage1.last.acquire",
-      "desc": "Download a Derby/Oxford last (or last-shaped mesh) and import to Blender.",
-      "gate": "mesh imported AND non-empty bounding box",
-      "verify": "report() bbox; snapshot() lateral view",
-      "done": false
+      "desc": "Build a parametric Derby/Oxford last in Blender (scripts/build_last.py) from standard last measurements (EU42 men's dress). No free downloadable dress last exists; parametric is FOSS + dress-appropriate + fully controllable.",
+      "gate": "LAST mesh exists, watertight, length within a few mm of target, heel at origin / toe +Y / up +Z",
+      "verify": "report() dims+watertight; snapshot() lateral+medial+top",
+      "done": true,
+      "note": "v1 parametric last: watertight, 285mm, oriented correctly. Shape is serviceable but approximate (toe tip still tapers thin, mirror-symmetric). Station table in scripts/build_last.py can be iterated for higher fidelity."
     },
     {
       "id": "stage1.last.condition",
