@@ -18,15 +18,6 @@ vendor/
 # from them — kept local, NOT republished. Only derived numeric outlines (data/) are committed.
 references/
 
-# Raw downloaded last models — provenance/licence varies; keep local, don't redistribute
-# the source files. master.blend (conditioned working scene) is committed.
-00_last/*.stl
-00_last/*.obj
-00_last/*.glb
-00_last/*.gltf
-00_last/*.fbx
-00_last/*.ply
-
 # Heavy render outputs are regenerated each session by snapshot() — keep the
 # folder (.gitkeep) but don't version every PNG. Telemetry JSON IS versioned
 # (it is the harness's cross-session memory).
