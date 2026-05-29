@@ -8,3 +8,9 @@ Last profile reverse-engineered from clean orthographic product photos:
 
 Derived data committed: data/profile_side.json (and profile_top.json) — numeric outline
 stations (facts/measurements), not the images.
+
+## Real last model (Stage 1, canonical)
+- "Foot Form / Shoe Last for Footwear Design" — Sketchfab, **CC BY** (attribution required).
+  https://sketchfab.com/3d-models/foot-form-shoe-last-for-footwear-design-676d6bde16d14f75bd0627ebe6097d6f
+  Clean purpose-built last (~8950 faces). Downloaded to 00_last/ and conditioned by
+  scripts/import_last.py. Attribution to be carried in repo + final outputs.
