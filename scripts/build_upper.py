@@ -15,6 +15,7 @@ PROJ = "/Users/koustubh/Claude/nishan"
 LENGTH = 285.0
 VAMP_START_T = 0.46     # forward of this the upper is closed (vamp + toe)
 SOLE_NZ = -0.25         # faces with normal.z below this are sole -> removed
+THICKNESS = 1.6         # mm calf leather: the upper's material thickness (the "buffer")
 
 def topline_z(t):
     # collar height (mm) from heel(t=0) sweeping up to the throat front
@@ -43,9 +44,25 @@ bmesh.ops.delete(bm, geom=kill, context="FACES")
 bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
 bm.normal_update()
 bm.to_mesh(up.data); bm.free(); up.data.update()
+
+# THE BUFFER: give the upper real material thickness offset OUTWARD from the last.
+# offset=1.0 -> the original (on-last) surface becomes the INNER face; the leather
+# occupies last..last+THICKNESS, so the upper is a distinct 1.6mm layer over the last.
+bpy.ops.object.select_all(action="DESELECT")
+up.select_set(True); bpy.context.view_layer.objects.active = up
+sol = up.modifiers.new("solidify", "SOLIDIFY")
+sol.thickness = THICKNESS
+sol.offset = 1.0
+sol.use_even_offset = True
+bpy.ops.object.modifier_apply(modifier="solidify")
+# recompute normals outward
+bm2 = bmesh.new(); bm2.from_mesh(up.data)
+bmesh.ops.recalc_face_normals(bm2, faces=bm2.faces)
+bm2.to_mesh(up.data); bm2.free(); up.data.update()
 for p in up.data.polygons:
     p.use_smooth = True
 
-last.hide_render = True                    # show only the UPPER in renders
+last.hide_render = True                    # show only the UPPER in renders by default
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(PROJ, "master.blend"))
-result = {"upper_verts": len(up.data.vertices), "upper_faces": len(up.data.polygons)}
+result = {"upper_verts": len(up.data.vertices), "upper_faces": len(up.data.polygons),
+          "thickness_mm": THICKNESS, "note": "upper is a solid 1.6mm shell, inner face on the last"}

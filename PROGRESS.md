@@ -64,10 +64,18 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 **Stage 2 — upper surface (v1, in progress).**
 - `scripts/build_upper.py`: copy LAST → UPPER, delete sole (downward-facing faces → featherline boundary), cut collar/throat opening (rear region above a topline curve; vamp/toe stays closed). LAST kept but `hide_render=True`.
 - Verified via contrasting-material top render: collar/throat opening is cut in the rear/instep, vamp/toe closed, upper conforms to last.
-- v1 topline shape is a crude heuristic (linear `topline_z(t)`); needs refinement to a real Derby topline (collar height at heel, throat V at the facings). Proper facing/quarter styling is Stage 3.
+- v1 topline shape is a crude heuristic (linear `topline_z(t)`); needs refinement to a real Derby topline (collar height at heel, throat V at the facings).
 
-**Next**
-- Refine the topline shape (Derby collar + throat) if desired, then `stage3.panels.split`.
+**User feedback (important):** what I'd called the "upper" was just the trimmed last surface — coincident with the last, NO buffer, NO design, NO logo/stitches/patterns. Corrected the framing. Design decisions captured: **Plain Derby**, **logo on heel counter**, **brogue + mojari/phulkari motifs**, **1.6mm calf**.
+
+**Buffer DONE:** `build_upper.py` now solidifies the upper 1.6mm OUTWARD (offset=1.0) → a real leather-thickness layer whose inner face is on the last. Verified: approx thickness 1.57mm; upper width 103.4 vs last 100.2 (1.6mm proud each side). 25 stray non-manifold rim edges to clean during paneling.
+
+**Still TODO for a real upper (in order):**
+1. Refine Derby topline (collar height + throat V at facings); add lasting allowance at featherline.
+2. `stage3.panels.split`: Derby panels — vamp, quarters, facings/eyestay (eyelets), tongue, heel counter — as real pieces/seams.
+3. Stitching: seam stitch lines.
+4. Logo: Nishaan Aankra mark debossed on the heel counter (from inspirations/nishaan_logos.svg).
+5. Motifs: brogue perforations + mojari/phulkari/morpankh patterns on cap/facings (from inspirations/*.svg).
 
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
