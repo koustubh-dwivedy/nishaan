@@ -61,8 +61,13 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 - Raw STL gitignored (provenance/licence varies, 3MB binary); master.blend (conditioned scene) committed. **Provenance flagged to user** — if the model's licence restricts redistribution, swap to the confirmed CC-BY Sketchfab "Foot Form / Shoe Last".
 - Procedural scripts retained but superseded as the last source.
 
+**Stage 2 — upper surface (v1, in progress).**
+- `scripts/build_upper.py`: copy LAST → UPPER, delete sole (downward-facing faces → featherline boundary), cut collar/throat opening (rear region above a topline curve; vamp/toe stays closed). LAST kept but `hide_render=True`.
+- Verified via contrasting-material top render: collar/throat opening is cut in the rear/instep, vamp/toe closed, upper conforms to last.
+- v1 topline shape is a crude heuristic (linear `topline_z(t)`); needs refinement to a real Derby topline (collar height at heel, throat V at the facings). Proper facing/quarter styling is Stage 3.
+
 **Next**
-- `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat (Derby/Oxford).
+- Refine the topline shape (Derby collar + throat) if desired, then `stage3.panels.split`.
 
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
