@@ -77,6 +77,12 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 4. Logo: Nishaan Aankra mark debossed on the heel counter (from inspirations/nishaan_logos.svg).
 5. Motifs: brogue perforations + mojari/phulkari/morpankh patterns on cap/facings (from inspirations/*.svg).
 
+**Stage 3 design attempt (scripts/build_design.py) — HONEST status.**
+- Built: stitch beads following the sharp-edge seam loops, 10 eyelets along the throat, a heel-logo disc, leather material + sun-studio render rig.
+- Works: featherline stitching renders correctly (clay ¾). Buffer + last are solid.
+- Does NOT work yet: throat/topline stitching + eyelets face away/need refinement; leather colour over-exposes (oxblood→orange under Standard transform); brogue + real logo not done.
+- **Conclusion (honest):** blind scripted detailing + render-and-look does NOT converge to high quality — compounding issues (buried elements vs 1.6mm shell, self-shadowed throat, exposure, framing) each cost a render iteration. Same ceiling as the procedural last. A finished/photoreal designed shoe is a 3D-artist task done INTERACTIVELY in Blender's viewport (BlenderMCP supports guided live work), or the project should lean on its real strength: the manufacturing pipeline (panels→flatten→cut patterns, design as precise 2D lines). Awaiting user direction.
+
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.
 - Drive live Blender: `python3 scripts/mcp_client.py file <script>` (script sets `result`). Persist via `bpy.ops.wm.save_as_mainfile`; then headless `report`/`snapshot` on `master.blend`.
