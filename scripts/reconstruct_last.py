@@ -44,13 +44,12 @@ top_z = heavy_smooth(np.interp(T, ts_top, top_h) * LENGTH_MM, 17)   # convex ins
 xL = np.interp(T, ts_l, left) * LENGTH_MM
 xR = np.interp(T, ts_r, right) * LENGTH_MM
 
-def bottom_z(t):
-    z = SOLE_TOP_MM
-    if t < HEEL_END_T: z += HEEL_HEIGHT * (HEEL_END_T - t) / HEEL_END_T
-    if t > TOE_START_T: z += TOE_SPRING * (t - TOE_START_T) / (1.0 - TOE_START_T)
-    return z
-bot_z = np.array([bottom_z(t) for t in T])
-top_z = np.maximum(top_z, bot_z + 6.0)
+# Anatomical ROCKER featherline (side view): raised heel seat -> concave arch/waist
+# -> low ball/tread -> toe spring. (Not a flat plane — this is what makes it read as a last.)
+bt = np.array([0.00, 0.10, 0.20, 0.32, 0.45, 0.58, 0.70, 0.80, 0.90, 1.00])
+bz = np.array([30.0, 28.0, 24.0, 17.0, 11.0,  8.0,  8.0, 10.0, 14.0, 21.0])
+bot_z = heavy_smooth(np.interp(T, bt, bz), 7)
+top_z = np.maximum(top_z, bot_z + 8.0)
 
 def ring(i):
     """D-section: flat bottom xL->xR at bot_z, domed top arc back xR->xL to top_z."""
@@ -83,6 +82,21 @@ for i in range(NSTN - 1):
 bm.faces.new(rings[0][::-1])     # heel cap (n-gon, reversed for outward normal)
 bm.faces.new(rings[-1])          # toe cap (n-gon)
 bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+
+# Crease the two longitudinal FEATHERLINE edges (bottom corners: ring index 0 = xL,
+# index N_BOT-1 = xR) so subdivision keeps a crisp sole edge instead of a puffy blob.
+try:
+    cl = bm.edges.layers.crease.verify()
+    bm.edges.ensure_lookup_table()
+    # taper crease to 0 near heel/toe so the ends round off (no sharp corner poke)
+    for k in (0, N_BOT - 1):
+        for i in range(NSTN - 1):
+            e = bm.edges.get((rings[i][k], rings[i + 1][k]))
+            if e is not None:
+                edge = min(i, NSTN - 2 - i)
+                e[cl] = max(0.0, min(1.0, (edge - 2) / 5.0))
+except Exception as _e:
+    pass
 me = bpy.data.meshes.new("LAST"); bm.to_mesh(me); bm.free()
 last = bpy.data.objects.new("LAST", me)
 bpy.context.scene.collection.objects.link(last)
