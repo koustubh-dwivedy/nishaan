@@ -49,11 +49,11 @@
     },
     {
       "id": "stage1.last.acquire",
-      "desc": "Reverse-engineer the last from real Oxford/Derby photos. trace_side.py + trace_top.py (OpenCV via uv) extract the top/instep silhouette and width from orthographic H&M Derby photos; reconstruct_last.py lofts cross-sections (traced top + traced width + modelled featherline/heel-seat/toe-spring bottom) into a watertight LAST.",
-      "gate": "LAST mesh exists, watertight, length within a few mm of target, heel at origin / toe +Y / up +Z",
-      "verify": "report() dims+watertight; snapshot() lateral+3/4; visual: recognizable last (instep hump, toe taper, heel seat)",
+      "desc": "Use a REAL professional last model (procedural reverse-engineering from shoe photos hit a quality ceiling). scripts/import_last.py imports the downloaded last STL, keeps one last (file is a L/R pair), orients (length+Y, up+Z, heel@origin), scales to 285mm, recalc normals, saves master.blend.",
+      "gate": "single watertight LAST, length 285mm, heel at origin / toe +Y / up +Z, recognizable professional last (cone/instep/featherline/toe-spring)",
+      "verify": "report() dims+watertight; snapshot() lateral+3/4",
       "done": true,
-      "note": "v4 (scripts/reconstruct_last.py): image-derived + lofted LAST-SHAPED cross-sections (flat featherline bottom + domed asymmetric top), n-gon end caps (no pinching poles), Catmull-Clark subsurf. Smooth organic last: rounded heel, rounded toe box, convex instep, asymmetric plan, watertight. Tried + rejected: v1 ellipse loft (pointed toe), v2, v3 boolean plan/profile intersection (accurate silhouettes but slab-sided/blocky). Key fixes learned: prisms/from_pydata need recalc_face_normals BEFORE boolean (else voxel remesh makes a hollow shell); convex-smooth the traced top to remove the lace-throat dip; round heel/toe in the silhouette, not via mesh smoothing."
+      "note": "CURRENT/canonical: real last from 'MALE LAST SIZE 9.stl' (a L/R pair; keep largest component), conditioned by import_last.py -> watertight 100x285x101mm, professional geometry. Raw model gitignored (provenance varies); master.blend committed; provenance flagged to user. Procedural scripts (trace_side/trace_top/reconstruct_last) retained but SUPERSEDED — they could only reach 'decent', not pro-grade, from 2 shoe silhouettes."
     },
     {
       "id": "stage1.last.condition",

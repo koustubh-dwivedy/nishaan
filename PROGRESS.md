@@ -54,10 +54,15 @@ Newest entries on top. Read this + `git log` + `spec.json` at the start of every
 - Hard-won lessons (in spec note + memory): recalc_face_normals on prisms BEFORE boolean or voxel-remesh yields a hollow shell (signed-volume≈0, renders dark); snapshot.py now uses world ambient + aimed suns so geometry is always visible; round heel/toe in the silhouette not via smoothing.
 - Retired scripts: build_last.py (v1 ellipse), reconstruct_last_v3.py (boolean, slab-sided).
 
+**Last — REAL professional model (current/canonical).** User rejected all procedural attempts ("exceptionally perfect" required); procedural-from-shoe-photos has a real quality ceiling. Switched to a real last:
+- User downloaded `MALE LAST SIZE 9.stl` into `00_last/` (a L/R pair of lasts).
+- `scripts/import_last.py`: import → keep largest connected component (one last) → orient (length Z→+Y, up +Z, heel@origin) → scale length=285mm → recalc normals → save master.blend.
+- Result: single watertight last, 100×285×101mm, genuine professional geometry (cone, instep, featherline, toe spring). Verified lateral + ¾ + report.
+- Raw STL gitignored (provenance/licence varies, 3MB binary); master.blend (conditioned scene) committed. **Provenance flagged to user** — if the model's licence restricts redistribution, swap to the confirmed CC-BY Sketchfab "Foot Form / Shoe Last".
+- Procedural scripts retained but superseded as the last source.
+
 **Next**
-- Optional polish: fuller toe box, soften featherline edge, stronger medial/lateral asymmetry.
-- `stage1.last.condition`: orientation/scale correct by construction; remaining = mark the featherline curve for Stage 2/3.
-- `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat.
+- `stage2.upper.build`: shrinkwrap a quad upper skin onto LAST, define topline/throat (Derby/Oxford).
 
 **Notes**
 - Blender 5.1.2 at `/Applications/Blender.app/Contents/MacOS/Blender`; Inkscape at `/Applications/Inkscape.app/Contents/MacOS/inkscape`.

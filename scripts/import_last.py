@@ -63,50 +63,63 @@ def main():
         bpy.ops.object.join()
     ob = bpy.context.view_layer.objects.active
     ob.name = "LAST"; ob.data.name = "LAST"
-    # apply any import transforms
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
-    # orient: longest axis -> Y (length), next -> X (width), shortest -> Z (height)
-    bb = [Vector(c) for c in ob.bound_box]
-    dims = ob.dimensions
-    order = sorted(range(3), key=lambda i: dims[i], reverse=True)  # [longest, mid, short]
+    # this STL is a PAIR of lasts (two shells) -> keep the largest connected component
+    import collections
     bm = bmesh.new(); bm.from_mesh(ob.data)
-    remap = {order[0]: 1, order[1]: 0, order[2]: 2}   # ->(X=1? ) length->Y, mid->X, short->Z
+    adj = collections.defaultdict(set)
+    for e in bm.edges:
+        adj[e.verts[0]].add(e.verts[1]); adj[e.verts[1]].add(e.verts[0])
+    seen = set(); comps = []
     for v in bm.verts:
-        c = v.co.copy()
-        v.co = Vector((c[order[1]], c[order[0]], c[order[2]]))
+        if v in seen: continue
+        st = [v]; comp = []
+        while st:
+            u = st.pop()
+            if u in seen: continue
+            seen.add(u); comp.append(u); st.extend(adj[u] - seen)
+        comps.append(comp)
+    comps.sort(key=len, reverse=True)
+    for comp in comps[1:]:
+        bmesh.ops.delete(bm, geom=comp, context="VERTS")
+
+    # orient: this model's length is along Z -> map to +Y; up = old +Y  ((x,y,z)->(x,-z,y))
+    ext0 = [max(v.co[i] for v in bm.verts) - min(v.co[i] for v in bm.verts) for i in range(3)]
+    if ext0.index(max(ext0)) == 2:                       # longest is Z (this file)
+        for v in bm.verts:
+            c = v.co.copy(); v.co = (c.x, -c.z, c.y)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     bm.to_mesh(ob.data); bm.free(); ob.data.update()
 
-    # scale so length (Y) == LENGTH_MM
-    d = ob.dimensions
-    s = LENGTH_MM / d.y if d.y else 1.0
-    ob.scale = (s, s, s)
-    bpy.ops.object.transform_apply(scale=True)
+    def extents():
+        xs = [v.co.x for v in ob.data.vertices]; ys = [v.co.y for v in ob.data.vertices]
+        zs = [v.co.z for v in ob.data.vertices]
+        return (min(xs), max(xs)), (min(ys), max(ys)), (min(zs), max(zs))
 
-    # flips + move heel to origin (min Y -> 0, sit on z: min Z -> 0)
-    if FLIP_Y or FLIP_Z:
-        bm = bmesh.new(); bm.from_mesh(ob.data)
-        for v in bm.verts:
-            if FLIP_Y: v.co.y = -v.co.y
-            if FLIP_Z: v.co.z = -v.co.z
-        if FLIP_Y or FLIP_Z:
-            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        bm.to_mesh(ob.data); bm.free(); ob.data.update()
-    # recenter
-    mn = Vector((min(v.co.x for v in ob.data.vertices),
-                 min(v.co.y for v in ob.data.vertices),
-                 min(v.co.z for v in ob.data.vertices)))
-    cx = (min(v.co.x for v in ob.data.vertices) + max(v.co.x for v in ob.data.vertices)) / 2
+    (x0, x1), (y0, y1), (z0, z1) = extents()
+    s = LENGTH_MM / (y1 - y0) if (y1 - y0) else 1.0      # scale so length (Y) = 285mm
     for v in ob.data.vertices:
-        v.co.x -= cx; v.co.y -= mn.y; v.co.z -= mn.z
+        v.co *= s
     ob.data.update()
+
+    # center X/Y/Z-min to a clean origin region (final orientation applied after we look)
+    (x0, x1), (y0, y1), (z0, z1) = extents()
+    cx = (x0 + x1) / 2
+    for v in ob.data.vertices:
+        v.co.x -= cx; v.co.y -= (y0 + y1) / 2; v.co.z -= (z0 + z1) / 2
+    ob.data.update()
+
+    bm = bmesh.new(); bm.from_mesh(ob.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(ob.data); bm.free(); ob.data.update()
     for p in ob.data.polygons:
         p.use_smooth = True
 
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(PROJ, "master.blend"))
+    (x0, x1), (y0, y1), (z0, z1) = extents()
     return {"imported": os.path.basename(path),
-            "dims_mm_WxLxH": [round(ob.dimensions.x, 1), round(ob.dimensions.y, 1), round(ob.dimensions.z, 1)],
-            "verts": len(ob.data.vertices)}
+            "dims_mm_WxLxH": [round(x1 - x0, 1), round(y1 - y0, 1), round(z1 - z0, 1)],
+            "verts": len(ob.data.vertices), "note": "W=X, L=Y(=285), H=Z; heel@origin, toe +Y"}
 
 result = main()
